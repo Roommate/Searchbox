@@ -19,13 +19,13 @@
             <div v-if="!items[0].fade">
                 <el-row  v-if="fold" class="FR MT45">
                     <el-button plain @click="reset()">重置</el-button>
-                    <el-button type="primary" @click="print()">查询</el-button>
+                    <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
                     <span v-if="items.length>items[0].num" class="switch-up"
                         @click="foldBox">展开<i class="el-icon-arrow-down"></i></span>
                 </el-row>
                 <el-row  v-else class="FR">
                     <el-button plain @click="reset()">重置</el-button>
-                    <el-button type="primary" @click="print()">查询</el-button>
+                    <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
                     <span v-if="items.length>items[0].num" class="switch-up"
                         @click="foldBox">收起<i class="el-icon-arrow-up"></i></span>
                 </el-row>
@@ -38,9 +38,11 @@
 import { renderSelect } from '@/utils/datatransform';
 
 import SearchInput from './Models/SearchInput';
+import SearchSelectAndInput from './Models/SearchSelectAndInput';
 import SearchSelect from './Models/SearchSelect';
 import SearchSelect2 from './Models/SearchSelect2';
 import SearchSelect3 from './Models/SearchSelect3';
+import SearchSelect4 from './Models/SearchSelect4';
 import SearchSwitch from './Models/SearchSwitch';
 import SearchDataPicker from './Models/SearchDataPicker';
 import SearchDataTimePicker from './Models/SearchDataTimePicker';
@@ -79,6 +81,12 @@ export default {
         return false;
       },
     },
+    btnVal: {
+      type: String,
+      default() {
+        return '查询';
+      },
+    },
   },
   data() {
     return {
@@ -87,9 +95,11 @@ export default {
   },
   components: {
     SearchInput,
+    SearchSelectAndInput,
     SearchSelect,
     SearchSelect2,
     SearchSelect3,
+    SearchSelect4,
     SearchSwitch,
     SearchDataPicker,
     SearchDataTimePicker,
@@ -111,23 +121,23 @@ export default {
       let valids = true;
       const result = {};
       const validates = (dom) => {
-        dom.$refs.item.validate((valid) => {
-          if (!valid) {
-            valids = false;
-            return false;
-          }
-          result[dom.item.name] = dom.item.value;
-          return true;
-        });
+        if (dom) {
+          dom.$refs.item.validate((valid) => {
+            if (!valid) {
+              valids = false;
+              return false;
+            }
+            if (dom.item.name) {
+              result[dom.item.name] = dom.item.value;
+            }
+            return true;
+          });
+        }
       };
       const obj = this.$refs;
       Object.keys(obj).forEach((key) => {
-      // console.log(key, obj[key]);
         validates(obj[key][0]);
       });
-      // for (let i = 0, l = this.$refs.form.length; i < l; i += 1) {
-      //   validates(this.$refs.form[i]);
-      // }
       if (!valids) return false;
       return result;
     },
@@ -135,20 +145,13 @@ export default {
       this.fold = !this.fold;
     },
     reset() {
-      // const list = this.$refs.form;
-      // const list = this.items;
-
-      // for (let i = 0, l = list.length; i < l; i += 1) {
-      //   this.$refs[list[i].name].resetFields();
-      // }
       const obj = this.$refs;
+      console.log(obj);
       Object.keys(obj).forEach((key) => {
-        obj[key][0].reset();
-      // console.log(key, obj[key]);
+        if (obj[key][0]) {
+          obj[key][0].reset();
+        }
       });
-      // for (let i = 0; i < this.items.length; i += 1) {
-      //   this.items[i].value = '';
-      // }
     },
     handleChange(val, item) {
       this.$emit('searchChange', item);
@@ -180,7 +183,7 @@ export default {
       }
     },
     dateBlur(item, index, items) {
-      if (item.value.length) {
+      if (item.value && item.value.length) {
         this.focusJump(index, items, true);
       }
     },

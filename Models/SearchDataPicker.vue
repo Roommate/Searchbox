@@ -6,7 +6,7 @@
           <el-form :model="item" ref="item" :rules="rules">
             <el-form-item prop="value" :label='item.title'>
               <el-date-picker v-model="item.value"
-              type="date"
+              type="date" value-format="timestamp"
               :autofocus="item.focus"
               @blur="blur(item)"
               ref="elInput"

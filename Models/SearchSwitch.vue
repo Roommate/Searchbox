@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     reset() {
-      this.item.value = '';
+      this.item.value = false;
     },
   },
 };
