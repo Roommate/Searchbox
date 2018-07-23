@@ -1,45 +1,54 @@
 <template>
-    <div>
-        <div class="searchWarp">
-            <el-row>
-                <div class="grid-content">
-                <component
-                v-for="(item, index) in items"
-                v-if="!fold||index<items[0].num"
-                :key="index"
-                :is="item.type"
-                :item="item"
-                :form="form"
-                :ref="item.name"
-                @dateBlur="dateBlur(item,index,items)"
-                @keyup.native.13="focusJump(index,items)"
-                @change="handleChange"></component>
-                </div>
-            </el-row>
-            <div v-if="!items[0].fade">
-                <el-row  v-if="fold" class="FR MT45">
-                    <el-button plain @click="reset()">重置</el-button>
-                    <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
-                    <span v-if="items.length>items[0].num" class="switch-up"
-                        @click="foldBox">展开<i class="el-icon-arrow-down"></i></span>
-                </el-row>
-                <el-row  v-else class="FR">
-                    <el-button plain @click="reset()">重置</el-button>
-                    <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
-                    <span v-if="items.length>items[0].num" class="switch-up"
-                        @click="foldBox">收起<i class="el-icon-arrow-up"></i></span>
-                </el-row>
-            </div>
+  <div class="searchWarp">
+      <el-row>
+        <div class="grid-content">
+          <component
+          v-for="(item, index) in items"
+          v-if="!newFold||index<items[0].num"
+          :key="index"
+          :is="item.type"
+          :item="item"
+          :form="form"
+          :ref="item.name"
+          @dateBlur="dateBlur(item,index,items)"
+          @keyup.native.13="focusJump(index,items)"
+          @change="handleChange"></component>
         </div>
-    </div>
+      </el-row>
+      <div v-if="!items[0].fade">
+          <el-row  v-if="newFold" class="FR MT45">
+              <div v-if="!hideBtn">
+              <el-button plain @click="reset()">重置</el-button>
+              <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
+              <span v-if="items.length>items[0].num" class="switch-up"
+                  @click="foldBox">展开<i class="el-icon-arrow-down"></i></span>
+              </div>
+              <div v-else>
+                <span v-if="items.length>items[0].num" class="switch-up"
+                  @click="foldBox">展开<i class="el-icon-arrow-down"></i></span>
+              </div>
+          </el-row>
+          <el-row  v-else class="FR">
+              <el-button plain @click="reset()">重置</el-button>
+              <span v-if="!hideBtn">
+              <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
+              </span>
+              <el-button type="primary" v-for="(item, index) in btnList" :key="index"
+                @click="print(item.info)">{{ item.val }}</el-button>
+              <span v-if="items.length>items[0].num" class="switch-up"
+                  @click="foldBox">收起<i class="el-icon-arrow-up"></i></span>
+          </el-row>
+      </div>
+  </div>
 </template>
 
 <script>
-import { renderSelect } from '@/utils/datatransform';
+import { renderSelect } from '@/libs/utils/datatransform';
 
 import SearchInput from './Models/SearchInput';
 import SearchSelectAndInput from './Models/SearchSelectAndInput';
 import SearchSelect from './Models/SearchSelect';
+import SearchMultiSelect from './Models/SearchMultiSelect';
 import SearchSelect2 from './Models/SearchSelect2';
 import SearchSelect3 from './Models/SearchSelect3';
 import SearchSelect4 from './Models/SearchSelect4';
@@ -81,22 +90,47 @@ export default {
         return false;
       },
     },
+    hideBtn: {
+      type: Boolean,
+      default() {
+        return false;
+      },
+    },
     btnVal: {
       type: String,
       default() {
         return '查询';
       },
     },
+    btnList: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+    searchAllInfo: {
+      type: Boolean,
+      default() {
+        return false;
+      },
+    },
+    fold: {
+      type: Boolean,
+      default() {
+        return true;
+      },
+    },
   },
   data() {
     return {
-      fold: true,
+      newFold: this.fold,
     };
   },
   components: {
     SearchInput,
     SearchSelectAndInput,
     SearchSelect,
+    SearchMultiSelect,
     SearchSelect2,
     SearchSelect3,
     SearchSelect4,
@@ -111,11 +145,21 @@ export default {
     SearchCityCascader,
   },
   methods: {
-    print() {
+    print(val) {
       const result = this.multiValidate();
-      if (result) this.$emit('search', result);
-      console.log(result);
-      return result;
+      let param = {};
+      if (result && !this.searchAllInfo) {
+        Object.keys(result).forEach((key) => {
+          if (result[key] !== '') {
+            param[key] = result[key];
+          }
+        });
+      } else {
+        param = result;
+      }
+      if (param) this.$emit('search', param, val);
+      console.log(param, val);
+      return param;
     },
     multiValidate() {
       let valids = true;
@@ -142,11 +186,10 @@ export default {
       return result;
     },
     foldBox() {
-      this.fold = !this.fold;
+      this.newFold = !this.newFold;
     },
     reset() {
       const obj = this.$refs;
-      console.log(obj);
       Object.keys(obj).forEach((key) => {
         if (obj[key][0]) {
           obj[key][0].reset();
@@ -201,6 +244,7 @@ export default {
 .FR{
     float: right;
     margin:25px;
+    line-height: 40px;
 }
 .FR>span{
     margin:0 10px;

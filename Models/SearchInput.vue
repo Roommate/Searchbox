@@ -9,6 +9,8 @@
               :placeholder="item.placeholder"
               :prop="item.value"
               :autofocus="item.focus"
+              :type="item.inputType||'text'"
+              @change="handleChange"
               ref="elInput"
               >
               <template v-if="item.append" slot="append">{{item.appendItem}}</template>
@@ -40,6 +42,9 @@ export default {
     };
   },
   methods: {
+    handleChange(val) {
+      this.$emit('change', val, this.item);
+    },
     reset() {
       this.item.value = '';
     },

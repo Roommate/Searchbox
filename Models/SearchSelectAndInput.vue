@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import axios from '@/utils/http';
+import axios from '@/libs/utils/http';
 
 export default {
   name: 'SearchSelectAndInput',

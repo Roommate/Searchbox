@@ -18,7 +18,8 @@
                   :key="options.value"
                   :label="options.label"
                   :value="adapter(options.value)">
-                    <span v-if="options.fvalue" style="float: left">{{ options.label }}</span>
+                    <span v-if="options.fvalue || item.half"
+                     style="float: left">{{ options.label }}</span>
                     <span v-else style="float: left">{{ options.label+'-'+options.value }}</span>
                   </el-option>
               </el-select>
@@ -31,7 +32,7 @@
 </template>
 
 <script>
-import axios from '@/utils/http';
+import axios from '@/libs/utils/http';
 
 export default {
   name: 'SearchSelect4',

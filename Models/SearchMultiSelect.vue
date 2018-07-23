@@ -3,16 +3,18 @@
       <el-col :span="item.span">
         <div class="grid-content bg-purple">
           <!-- <span>{{item.title}}</span> -->
-          <el-form :model="item" ref="item" :rules="rules">
-            <el-form-item prop="value" :label='item.title'>
-              <el-select v-model="item.value"
-              :disabled="item.disabled" clearable
+          <el-form :model="items" ref="item" :rules="rules">
+            <el-form-item prop="value" :label='items.title'>
+              <el-select v-model="items.value"
+              multiple
+              filterable
+              :disabled="items.disabled" clearable
               :autofocus="item.focus"
               ref="elInput"
-              :placeholder="item.placeholder"
+              :placeholder="items.placeholder"
               @change="handleChange">
                   <el-option
-                  v-for="options in item.options"
+                  v-for="options in items.options"
                   :key="options.value"
                   :label="options.label"
                   :value="adapter(options.value)">
@@ -27,7 +29,7 @@
 
 <script>
 export default {
-  name: 'SearchSelect',
+  name: 'SearchMultiSelect',
   props: {
     item: {
       type: Object,
@@ -41,25 +43,25 @@ export default {
       rules: {
         value: this.item.rule,
       },
-      // item: this.item,
+      items: this.item,
     };
   },
   methods: {
     handleChange(val) {
-      this.$emit('change', val, this.item);
+      this.$emit('change', val, this.items);
     },
     adapter(val) {
       let ret = val;
-      if (typeof this.item.value === 'number') {
+      if (typeof this.items.value === 'number') {
         ret = Number(ret);
       }
-      if (typeof this.item.value === 'string') {
+      if (typeof this.items.value === 'string') {
         ret = String(ret);
       }
       return ret;
     },
     reset() {
-      this.item.value = '';
+      this.items.value = '';
     },
     focus() {
       this.$refs.elInput.focus();
