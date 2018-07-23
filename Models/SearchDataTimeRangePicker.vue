@@ -29,7 +29,7 @@
 // 下面这种方式是时间范围默认显示当天0点到23：59：59
 // value: [
 //   new Date(new Date().toLocaleDateString()).getTime(),
-//   new Date(new Date().toLocaleDateString()).getTime() + (24 * 60 * 60 * 1000) - 1],
+//   new Date(new Date().toLocaleDateString()).getTime() + ((24 * 60 * 60 * 1000) - 1)],
 export default {
   name: 'SearchDataRangePicker',
   props: {
