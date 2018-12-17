@@ -1,7 +1,5 @@
 <template>
-    <div>
         <el-col :span="item.span">
-        <div class="grid-content bg-purple">
           <!-- <span>{{item.title}}</span> -->
           <el-form :model="item" ref="item" :rules="rules">
             <el-form-item prop="value" :label='item.title'>
@@ -10,15 +8,14 @@
               :autofocus="item.focus"
               @blur="blur(item)"
               ref="elInput"
+              :picker-options="pickerOptions"
               :disabled="item.disabled"
               :placeholder="item.placeholder">
               </el-date-picker>
             </el-form-item>
            </el-form>
 
-        </div>
       </el-col>
-    </div>
 </template>
 
 <script>
@@ -37,7 +34,24 @@ export default {
       rules: {
         value: this.item.rule,
       },
+      pickerOptions: {
+        // disabledDate(time) {
+        //   return time.getTime() > Date.now();
+        // },
+      },
     };
+  },
+  mounted() {
+    if (this.item.focus) {
+      this.$refs.elInput.focus();
+    }
+    if (this.item.deadline) {
+      this.pickerOptions = {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        },
+      };
+    }
   },
   methods: {
     reset() {

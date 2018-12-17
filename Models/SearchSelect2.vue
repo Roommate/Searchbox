@@ -1,13 +1,12 @@
 <template>
-     <div>
       <el-col :span="item.span">
-        <div class="grid-content bg-purple">
           <!-- <span>{{item.title}}</span> -->
           <el-form :model="items" ref="item" :rules="rules">
             <el-form-item prop="value" :label='items.title'>
               <el-select v-model="items.value" filterable
-              :disabled="items.disabled" clearable
+              :disabled="items.disabled" :clearable="item.clearable"
               :autofocus="item.focus"
+              :popper-append-to-body="item.popperAppendToBody"
               ref="elInput"
               :placeholder="items.placeholder"
               @change="handleChange">
@@ -21,9 +20,7 @@
             </el-form-item>
           </el-form>
 
-        </div>
       </el-col>
-    </div>
 </template>
 
 <script>
@@ -44,6 +41,11 @@ export default {
       },
       items: this.item,
     };
+  },
+  mounted() {
+    if (this.item.focus) {
+      this.$refs.elInput.focus();
+    }
   },
   methods: {
     handleChange(val) {

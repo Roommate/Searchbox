@@ -1,7 +1,6 @@
 <template>
     <div>
       <el-col :span="item.span1">
-        <div class="grid-content bg-purple">
           <!-- <span>{{item.title}}</span> -->
           <el-form :model="item" ref="item" :rules="rules">
             <el-form-item prop="value" :label='item.title'>
@@ -12,10 +11,8 @@
               </el-input-number>
             </el-form-item>
           </el-form>
-        </div>
       </el-col>
       <el-col :span="item.span2">
-        <div class="grid-content bg-purple">
           <!-- <span>&nbsp;</span> -->
           <el-form :model="item" ref="item" :rules="rules">
             <el-form-item prop="value" :label='item.title2'>
@@ -25,7 +22,6 @@
               </el-input-number>
             </el-form-item>
           </el-form>
-        </div>
       </el-col>
     </div>
 </template>
@@ -47,6 +43,11 @@ export default {
         value: this.item.rule,
       },
     };
+  },
+  mounted() {
+    if (this.item.focus) {
+      this.$refs.elInput.focus();
+    }
   },
   methods: {
     reset() {

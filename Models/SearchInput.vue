@@ -1,7 +1,5 @@
 <template>
-    <div>
       <el-col :span="item.span">
-        <div class="grid-content bg-purple">
           <!-- <span>{{item.title}}</span> -->
           <el-form :model="item" ref="item" :rules="rules">
             <el-form-item prop="value" :label='item.title'>
@@ -10,6 +8,7 @@
               :prop="item.value"
               :autofocus="item.focus"
               :type="item.inputType||'text'"
+              @focus="inputFocus"
               @change="handleChange"
               ref="elInput"
               >
@@ -18,9 +17,7 @@
               <input type='text' style="display:none;" />
             </el-form-item>
           </el-form>
-        </div>
       </el-col>
-    </div>
 </template>
 
 <script>
@@ -33,6 +30,11 @@ export default {
         return {};
       },
     },
+  },
+  mounted() {
+    if (this.item.focus) {
+      this.$refs.elInput.focus();
+    }
   },
   data() {
     return {
@@ -48,8 +50,12 @@ export default {
     reset() {
       this.item.value = '';
     },
+    inputFocus() {
+      this.$refs.elInput.select();
+    },
     focus() {
       this.$refs.elInput.focus();
+      this.$refs.elInput.select();
     },
     blur() {
       this.$refs.elInput.blur();

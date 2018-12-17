@@ -1,13 +1,12 @@
 <template>
-    <div>
       <el-col :span="item.span">
-        <div class="grid-content bg-purple">
           <!-- <span>{{item.title}}</span> -->
           <el-form :model="item" ref="item" :rules="rules">
             <el-form-item prop="fakeValue" :label='item.title'>
               <el-select v-model="item.fakeValue"
               :disabled="item.disabled" clearable
               :autofocus="item.focus1"
+              :popper-append-to-body="item.popperAppendToBody"
               ref="elInput"
               :placeholder="item.placeholder1"
               @change="handleChange">
@@ -31,9 +30,7 @@
               <input type='text' style="display:none;" />
             </el-form-item>
           </el-form>
-        </div>
       </el-col>
-    </div>
 </template>
 
 <script>

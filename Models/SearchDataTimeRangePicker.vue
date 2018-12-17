@@ -1,7 +1,5 @@
 <template>
-    <div>
         <el-col :span="item.span">
-        <div class="grid-content bg-purple">
           <!-- <span>{{item.title}}</span> -->
           <el-form :model="item" ref="item" :rules="rules">
             <el-form-item prop="value" :label='item.title'>
@@ -12,6 +10,7 @@
               :autofocus="item.focus"
               @blur="blur(item)"
               ref="elInput"
+              :picker-options="pickerOptions"
               :disabled="item.disabled"
               :range-separator="item.rangeSeparator"
               :start-placeholder="item.startPlaceholder"
@@ -20,16 +19,10 @@
               </el-date-picker>
             </el-form-item>
            </el-form>
-        </div>
       </el-col>
-    </div>
 </template>
 
 <script>
-// 下面这种方式是时间范围默认显示当天0点到23：59：59
-// value: [
-//   new Date(new Date().toLocaleDateString()).getTime(),
-//   new Date(new Date().toLocaleDateString()).getTime() + ((24 * 60 * 60 * 1000) - 1)],
 export default {
   name: 'SearchDataRangePicker',
   props: {
@@ -45,7 +38,24 @@ export default {
       rules: {
         value: this.item.rule,
       },
+      pickerOptions: {
+        // disabledDate(time) {
+        //   return time.getTime() > Date.now();
+        // },
+      },
     };
+  },
+  mounted() {
+    if (this.item.focus) {
+      this.$refs.elInput.focus();
+    }
+    if (this.item.deadline) {
+      this.pickerOptions = {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        },
+      };
+    }
   },
   methods: {
     reset() {

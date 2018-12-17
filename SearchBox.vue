@@ -1,5 +1,27 @@
+SearchBox主要是作为后台管理页面的查询条件使用，所覆盖功能包括输入框、下拉框、日期、时间、文本框及开关等。
+使用时仅需要引入模块并配置好参数即可。
+
+组件对应功能如下：
+SearchCheckBox 复选框（不常用，使用时尽量安排在最后一排）
+SearchCityCascader 是用来查询省市区三级联动的
+SearchDataPicker 用来查询日期
+SearchDataTimePicker 用来查询日期加时间
+SearchDataTimeRangePicker 用来查询日期时间范围
+SearchInput 普通的输入框
+SearchInputNumber 数字的输入框（不常用，一般用普通输入框加对输入值的验证来模拟数字输入框）
+SearchInputNumber2 数字范围的输入框（同上，不常用）
+SearchMultiSelect 多选下拉框，可选多个下拉框值
+SearchSelect 普通的下拉框
+SearchSelect2 可查询的下拉框
+SearchSelect3 可查询并且可以自定义内容的下拉框
+SearchSelect4 name--code 的下拉框，根据查询条件下拉框显示name与code值
+SearchSelectAndInput 由下拉框和输入框组成，下拉框定义项，输入框定义项的值
+SearchSwitch 开关
+SearchTextarea 文本框
+
 <template>
   <div class="searchWarp">
+      <p v-if="title" class = "title">{{$t('libsKey.key28')}}</p>
       <el-row>
         <div class="grid-content">
           <component
@@ -18,25 +40,25 @@
       <div v-if="!items[0].fade">
           <el-row  v-if="newFold" class="FR MT45">
               <div v-if="!hideBtn">
-              <el-button plain @click="reset()">重置</el-button>
+              <el-button plain @click="reset()">{{$t('libsKey.key29')}}</el-button>
               <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
               <span v-if="items.length>items[0].num" class="switch-up"
-                  @click="foldBox">展开<i class="el-icon-arrow-down"></i></span>
+                  @click="foldBox">{{$t('libsKey.key30')}}<i class="el-icon-arrow-down"></i></span>
               </div>
               <div v-else>
                 <span v-if="items.length>items[0].num" class="switch-up"
-                  @click="foldBox">展开<i class="el-icon-arrow-down"></i></span>
+                  @click="foldBox">{{$t('libsKey.key30')}}<i class="el-icon-arrow-down"></i></span>
               </div>
           </el-row>
           <el-row  v-else class="FR">
-              <el-button plain @click="reset()">重置</el-button>
+              <el-button plain @click="reset()">{{$t('libsKey.key29')}}</el-button>
               <span v-if="!hideBtn">
-              <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
+                <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
               </span>
               <el-button type="primary" v-for="(item, index) in btnList" :key="index"
                 @click="print(item.info)">{{ item.val }}</el-button>
               <span v-if="items.length>items[0].num" class="switch-up"
-                  @click="foldBox">收起<i class="el-icon-arrow-up"></i></span>
+                  @click="foldBox">{{$t('libsKey.key31')}}<i class="el-icon-arrow-up"></i></span>
           </el-row>
       </div>
   </div>
@@ -44,6 +66,8 @@
 
 <script>
 import { renderSelect } from '@/libs/utils/datatransform';
+import Locale from '@/libs/mixins/locale';
+import { t } from '@/libs/Locale';
 
 import SearchInput from './Models/SearchInput';
 import SearchSelectAndInput from './Models/SearchSelectAndInput';
@@ -62,16 +86,18 @@ import SearchInputNumber2 from './Models/SearchInputNumber2';
 import SearchCheckBox from './Models/SearchCheckBox';
 import SearchCityCascader from './Models/SearchCityCascader';
 
-
 export default {
+  mixins: [Locale],
   name: 'searchBox',
   props: {
+    // 要传入的表格
     items: {
       type: Array,
       default() {
         return [];
       },
     },
+    // 级联选择时传入的数组
     contact: {
       type: Array,
       default() {
@@ -90,30 +116,42 @@ export default {
         return false;
       },
     },
+    // SearchBox 标题
+    title: {
+      type: Boolean,
+      default() {
+        return false;
+      },
+    },
+    // 是否隐藏“查询”按钮
     hideBtn: {
       type: Boolean,
       default() {
         return false;
       },
     },
+    // “查询”按钮的显示内容，默认为“查询”
     btnVal: {
       type: String,
       default() {
-        return '查询';
+        return t('libsKey.key32');
       },
     },
+    // 拓展按钮，通常隐藏“重置”和“查询”按钮后根据自身需求设置
     btnList: {
       type: Array,
       default() {
         return [];
       },
     },
+    // 查询时是否要带上未填写的查询项
     searchAllInfo: {
       type: Boolean,
       default() {
         return false;
       },
     },
+    // 折叠标识
     fold: {
       type: Boolean,
       default() {
@@ -145,22 +183,37 @@ export default {
     SearchCityCascader,
   },
   methods: {
+    // 查询时处理数据
     print(val) {
+      // 判断是否通过验证
       const result = this.multiValidate();
       let param = {};
+      // 通过验证并且只保留有值的项
       if (result && !this.searchAllInfo) {
         Object.keys(result).forEach((key) => {
-          if (result[key] !== '') {
+          if (typeof (result[key]) === 'string') {
+            if (result[key].trim() !== '') {
+              param[key] = result[key].trim();
+            }
+          } else if (result[key] !== '') {
             param[key] = result[key];
           }
         });
-      } else {
+      } else { // 通过验证并且搜索所有的项
         param = result;
+        Object.keys(result).forEach((key) => {
+          if (typeof (result[key]) === 'string') {
+            param[key] = result[key].trim();
+          } else {
+            param[key] = result[key];
+          }
+        });
       }
       if (param) this.$emit('search', param, val);
       console.log(param, val);
       return param;
     },
+    // 验证方法
     multiValidate() {
       let valids = true;
       const result = {};
@@ -185,9 +238,11 @@ export default {
       if (!valids) return false;
       return result;
     },
+    // 折叠
     foldBox() {
       this.newFold = !this.newFold;
     },
+    // 重置
     reset() {
       const obj = this.$refs;
       Object.keys(obj).forEach((key) => {
@@ -196,6 +251,7 @@ export default {
         }
       });
     },
+    // 搜索框的change事件，用来级联处理
     handleChange(val, item) {
       this.$emit('searchChange', item);
       for (let i = 0, l = this.contact.length; i < l; i += 1) {
@@ -214,6 +270,7 @@ export default {
         }
       }
     },
+    // 光标流转
     focusJump(index, items, isloop) {
       if (!isloop) {
         this.$refs[items[index].name][0].blur();
@@ -225,6 +282,7 @@ export default {
         }
       }
     },
+    // 失去焦点（辅助光标流转功能）
     dateBlur(item, index, items) {
       if (item.value && item.value.length) {
         this.focusJump(index, items, true);
@@ -259,6 +317,14 @@ export default {
 }
 .MT45{
     margin-top: -50px;
+}
+.title{
+  line-height: 60px;
+  background: #fff;
+  font-size: 18px;
+  color:#777;
+  padding-left: 22px;
+  border-bottom: 1px solid #e0e0e0;
 }
 /* span{
     display: block;

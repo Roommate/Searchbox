@@ -1,7 +1,5 @@
 <template>
-     <div>
       <el-col :span="item.span">
-        <div class="grid-content bg-purple">
           <!-- <span>{{item.title}}</span> -->
           <el-form :model="item" ref="item" :rules="rules">
             <el-form-item prop="value" :label='item.title'>
@@ -16,9 +14,7 @@
               ></el-cascader>
             </el-form-item>
           </el-form>
-        </div>
       </el-col>
-    </div>
 </template>
 
 <script>

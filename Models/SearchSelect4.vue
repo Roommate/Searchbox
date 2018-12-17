@@ -1,17 +1,16 @@
 <template>
-     <div>
       <el-col :span="item.span">
-        <div class="grid-content bg-purple">
           <!-- <span>{{item.title}}</span> -->
           <el-form :model="items" ref="item" :rules="rules">
             <el-form-item prop="value" :label='items.title'>
               <el-select v-model="items.value" filterable
-              :disabled="items.disabled" clearable remote reserve-keyword
+              :disabled="items.disabled" :clearable="item.clearable" remote reserve-keyword
               :remote-method="remoteMethod"
               :loading="loading"
               :autofocus="item.focus"
               ref="elInput"
               :placeholder="items.placeholder"
+              :popper-append-to-body="item.popperAppendToBody"
               @change="handleChange">
                   <el-option
                   v-for="options in items.options"
@@ -20,21 +19,22 @@
                   :value="adapter(options.value)">
                     <span v-if="options.fvalue || item.half"
                      style="float: left">{{ options.label }}</span>
-                    <span v-else style="float: left">{{ options.label+'-'+options.value }}</span>
+                    <span v-else style="float: left">{{ options.value+'-'+options.label }}</span>
                   </el-option>
               </el-select>
             </el-form-item>
           </el-form>
 
-        </div>
       </el-col>
-    </div>
 </template>
 
 <script>
 import axios from '@/libs/utils/http';
+import Locale from '@/libs/mixins/locale';
+import { t } from '@/libs/Locale';
 
 export default {
+  mixins: [Locale],
   name: 'SearchSelect4',
   props: {
     item: {
@@ -43,6 +43,11 @@ export default {
         return {};
       },
     },
+  },
+  mounted() {
+    if (this.item.focus) {
+      this.$refs.elInput.focus();
+    }
   },
   data() {
     return {
@@ -55,6 +60,9 @@ export default {
   },
   methods: {
     handleChange(val) {
+      if (val.trim() === '') {
+        this.items.options = [{ label: t('libsKey.key27'), fvalue: true }];
+      }
       this.$emit('change', val, this.items);
     },
     adapter(val) {
@@ -68,10 +76,10 @@ export default {
       return ret;
     },
     remoteMethod(query) {
-      if (query !== '') {
+      if (query.trim() !== '') {
         this.loading = true;
         this.items.options = [];
-        axios.get(this.items.url, { params: { [this.items.query]: query } }).then((res) => {
+        axios.get(this.items.url, { params: { [this.items.query]: query.trim() } }).then((res) => {
           this.loading = false;
           for (let i = 0; i < res.data.length; i += 1) {
             this.items.options.push({ label: res.data[i][this.items.resLabel],
@@ -79,7 +87,7 @@ export default {
           }
         });
       } else {
-        this.items.options = [{ label: '请至少输入一个字符', fvalue: true }];
+        this.items.options = [{ label: t('libsKey.key27'), fvalue: true }];
       }
     },
     reset() {
