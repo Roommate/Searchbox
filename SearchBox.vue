@@ -40,25 +40,25 @@ SearchTextarea 文本框
       <div v-if="!items[0].fade">
           <el-row  v-if="newFold" class="FR MT45">
               <div v-if="!hideBtn">
-              <el-button plain @click="reset()">{{$t('libsKey.key29')}}</el-button>
-              <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
+              <el-button plain @click="reset()">重置</el-button>
+              <el-button type="primary" @click="print()">查询</el-button>
               <span v-if="items.length>items[0].num" class="switch-up"
-                  @click="foldBox">{{$t('libsKey.key30')}}<i class="el-icon-arrow-down"></i></span>
+                  @click="foldBox">展开<i class="el-icon-arrow-down"></i></span>
               </div>
               <div v-else>
                 <span v-if="items.length>items[0].num" class="switch-up"
-                  @click="foldBox">{{$t('libsKey.key30')}}<i class="el-icon-arrow-down"></i></span>
+                  @click="foldBox">展开<i class="el-icon-arrow-down"></i></span>
               </div>
           </el-row>
           <el-row  v-else class="FR">
-              <el-button plain @click="reset()">{{$t('libsKey.key29')}}</el-button>
+              <el-button plain @click="reset()">重置</el-button>
               <span v-if="!hideBtn">
-                <el-button type="primary" @click="print()">{{ btnVal }}</el-button>
+                <el-button type="primary" @click="print()">查询</el-button>
               </span>
               <el-button type="primary" v-for="(item, index) in btnList" :key="index"
                 @click="print(item.info)">{{ item.val }}</el-button>
               <span v-if="items.length>items[0].num" class="switch-up"
-                  @click="foldBox">{{$t('libsKey.key31')}}<i class="el-icon-arrow-up"></i></span>
+                  @click="foldBox">收起<i class="el-icon-arrow-up"></i></span>
           </el-row>
       </div>
   </div>
